@@ -1,0 +1,28 @@
+#foreach ($tag in $feature.tags)
+@$tag
+#end
+Feature: $feature.name
+  #if($feature.description) 
+$feature.description
+#end
+#foreach($scenario in $scenarios)
+  
+  #if(!$scenario.manual)
+  #foreach ($issue in $scenario.issues)
+  @$issue
+  #end
+  #foreach ($tag in $scenario.tags)
+  @$tag
+  #end
+  @$scenario.status
+  #if($scenario.outline)
+  Scenario Outline: $scenario.name
+  #else
+  Scenario: $scenario.name
+  #end
+
+  #foreach($step in $scenario.steps)
+  $step
+  #end
+  #end  
+#end
