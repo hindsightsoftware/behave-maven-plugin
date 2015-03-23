@@ -4,7 +4,8 @@ Add your Bintray credentials to the global maven settings.xml.
 
 ~/.m2/settings.xml
 
-```<settings>
+```
+<settings>
   <servers>
     <server>
   	  <id>bintray</id>
