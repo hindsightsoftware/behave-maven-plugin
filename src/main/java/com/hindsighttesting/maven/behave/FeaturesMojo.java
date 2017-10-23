@@ -9,6 +9,7 @@ import java.util.zip.ZipInputStream;
 
 import javax.ws.rs.core.MediaType;
 
+import com.sun.jersey.client.apache4.ApacheHttpClient4;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 
@@ -16,7 +17,6 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource.Builder;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import com.sun.jersey.client.apache4.config.ApacheHttpClient4Config;
 import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config;
 
 /**
@@ -114,20 +114,23 @@ public class FeaturesMojo extends AbstractMojo {
 
         DefaultApacheHttpClient4Config config = new DefaultApacheHttpClient4Config();
         if (httpProxyURL != null) {
-            config.getProperties().put(ApacheHttpClient4Config.PROPERTY_PROXY_URI, httpProxyURL);
+            if(httpProxyURL.length() > 1 && httpProxyURL.charAt(httpProxyURL.length()-1) == '/'){
+                httpProxyURL = httpProxyURL.substring(0, httpProxyURL.length()-1);
+            }
+            config.getProperties().put(DefaultApacheHttpClient4Config.PROPERTY_PROXY_URI, httpProxyURL);
             if (httpProxyUsername != null) {
-                config.getProperties().put(ApacheHttpClient4Config.PROPERTY_PROXY_USERNAME,
+                config.getProperties().put(DefaultApacheHttpClient4Config.PROPERTY_PROXY_USERNAME,
                         httpProxyUsername);
-                config.getProperties().put(ApacheHttpClient4Config.PROPERTY_PROXY_PASSWORD,
+                config.getProperties().put(DefaultApacheHttpClient4Config.PROPERTY_PROXY_PASSWORD,
                         httpProxyPassword);
             }
         }
 
         if (httpTimeout != null) {
-            config.getProperties().put(ApacheHttpClient4Config.PROPERTY_READ_TIMEOUT, httpTimeout);
+            config.getProperties().put(DefaultApacheHttpClient4Config.PROPERTY_READ_TIMEOUT, httpTimeout);
         }
 
-        Client restClient = Client.create(config);
+        ApacheHttpClient4 restClient = ApacheHttpClient4.create(config);
 
         if (username != null || !username.isEmpty()) {
             restClient.addFilter(new HTTPBasicAuthFilter(username, password));
